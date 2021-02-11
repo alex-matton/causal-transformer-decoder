@@ -35,9 +35,7 @@ print(
 # Causal Decoder
 causal_decoder = CausalTransformerDecoder(
     CausalTransformerDecoderLayer(
-        d_model=hdim,
-        nhead=nhead,
-        dim_feedforward=dim_feedforward,
+        d_model=hdim, nhead=nhead, dim_feedforward=dim_feedforward,
     ),
     num_layers=num_layers,
 ).to(device=device)
@@ -67,8 +65,8 @@ times_gpt = []
 t = time.time()
 with torch.no_grad():
     for i in range(1, output_lens[-1] + 1):
-        output, past = model(context, past_key_values=past)
-        token = torch.argmax(output[..., -1, :])
+        outputs = model(context, past_key_values=past)
+        token = torch.argmax(outputs.logits[-1, :])
         generated += [token.tolist()]
         context = token.unsqueeze(0)
         if i in output_lens:
@@ -88,15 +86,11 @@ with torch.no_grad():
         logits = to_vocab(output)
         top_indices = torch.argmax(logits, dim=-1)
         top_indices_last_token = top_indices[-1:]
-        decoded_tokens = torch.cat(
-            [decoded_tokens, top_indices_last_token], dim=0
-        )
+        decoded_tokens = torch.cat([decoded_tokens, top_indices_last_token], dim=0)
         if i in output_lens:
             times_causal_decoder.append(time.time() - t)
 
-print(
-    "Nb decoded tokens, time GPT2, time Causal Decoder, causal decoder / GPT2"
-)
+print("Nb decoded tokens, time GPT2, time Causal Decoder, causal decoder / GPT2")
 for (nb_tokens, time_gpt, time_causal_decoder, ratio) in zip(
     output_lens,
     times_gpt,

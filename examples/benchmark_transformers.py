@@ -10,9 +10,7 @@ import argparse
 
 parser = argparse.ArgumentParser()
 parser.add_argument(
-    "--type_generation",
-    default="short",
-    type=str,
+    "--type_generation", default="short", type=str,
 )
 parser.add_argument("--vocab_size", default=30000, type=int)
 parser.add_argument("--bsz", default=8, type=int)
@@ -39,9 +37,7 @@ elif args.type_generation == "long":
     n_experiments = [1] * len(output_lens)
 
 
-def generate_square_subsequent_mask(
-    sz: int, device: str = "cpu"
-) -> torch.Tensor:
+def generate_square_subsequent_mask(sz: int, device: str = "cpu") -> torch.Tensor:
     mask = (torch.triu(torch.ones(sz, sz)) == 1).transpose(0, 1)
     mask = (
         mask.float()
@@ -83,9 +79,7 @@ decoder.eval()
 torch.manual_seed(42)
 causal_decoder = CausalTransformerDecoder(
     CausalTransformerDecoderLayer(
-        d_model=hdim,
-        nhead=nhead,
-        dim_feedforward=dim_feedforward,
+        d_model=hdim, nhead=nhead, dim_feedforward=dim_feedforward,
     ),
     num_layers=num_layers,
 ).to(device=device)
@@ -117,9 +111,7 @@ with torch.no_grad():
                     i + 1, device=first_token.device
                 )  # create mask for autoregressive decoding
                 decoded_embeddings = embedding(decoded_tokens)
-                output = transformer(
-                    src, decoded_embeddings, tgt_mask=mask_dec
-                )
+                output = transformer(src, decoded_embeddings, tgt_mask=mask_dec)
                 logits = to_vocab(output)  # projection to vocab size
 
                 # keep most likely tokens
@@ -141,9 +133,7 @@ with torch.no_grad():
                     i + 1, device=first_token.device
                 )  # create mask for autoregressive decoding
                 decoded_embeddings = embedding(decoded_tokens)
-                output = decoder(
-                    decoded_embeddings, src_embeddings, tgt_mask=mask_dec
-                )
+                output = decoder(decoded_embeddings, src_embeddings, tgt_mask=mask_dec)
                 logits = to_vocab(output)  # projection to vocab size
 
                 # keep most likely tokens
@@ -181,13 +171,9 @@ with torch.no_grad():
             time_exp_causal_end_dec[len_index].append(time.time() - t)
             logits_causal = logits
 
-time_exp_regular_transf = [
-    sum(sub) / len(sub) for sub in time_exp_regular_transf
-]
+time_exp_regular_transf = [sum(sub) / len(sub) for sub in time_exp_regular_transf]
 time_exp_enc_dec = [sum(sub) / len(sub) for sub in time_exp_enc_dec]
-time_exp_causal_end_dec = [
-    sum(sub) / len(sub) for sub in time_exp_causal_end_dec
-]
+time_exp_causal_end_dec = [sum(sub) / len(sub) for sub in time_exp_causal_end_dec]
 
 print(
     "Bsz, hdim, Vocab size, Len input, Len output,"
