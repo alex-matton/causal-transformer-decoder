@@ -3,6 +3,8 @@
 This repository contains the code for the causal transformer decoder, which is
 the autoregressive version of the Pytorch TransformerDecoder.
 
+Explanation of what it does can be found here: https://scale.com/blog/pytorch-improvements
+
 ### To install the python package directly:
 
 ```shell
@@ -28,3 +30,8 @@ python -m benchmarks.benchmark_transformers
 ```shell
 python -m benchmarks.gpt_generation_benchmark
 ```
+
+
+# License
+
+The source code for the site is licensed under the MIT license, which you can find in the LICENSE file.
